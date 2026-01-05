@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import css from './Modal.module.css';
@@ -14,20 +14,32 @@ if (!modalRoot) {
   throw new Error('Modal root not found');
 }
 
-export const Modal = ({ children, onClose }: ModalProps) => {
+const Modal: React.FC<ModalProps> = ({ children, onClose }) => {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
 
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
     window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+
+    return () => {
+     
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleEscape);
+    };
   }, [onClose]);
 
   const handleBackdropClick = (
     e: React.MouseEvent<HTMLDivElement>
   ) => {
-    if (e.target === e.currentTarget) onClose();
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
   };
 
   return createPortal(
@@ -42,3 +54,5 @@ export const Modal = ({ children, onClose }: ModalProps) => {
     modalRoot
   );
 };
+
+export default Modal;
