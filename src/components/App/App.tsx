@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
 
 import css from './App.module.css';
@@ -11,9 +11,10 @@ import Modal from '../Modal/Modal';
 import { NoteForm } from '../NoteForm/NoteForm';
 
 import { fetchNotes } from '../../services/noteService';
-import type { Note, FetchNotesResponse } from '../../services/noteService';
+import type { Note } from '../../types/note';
+import type { FetchNotesResponse } from '../../services/noteService';
 
-const App: React.FC = () => {
+  const App: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,6 +25,7 @@ const App: React.FC = () => {
     queryKey: ['notes', currentPage, debouncedSearch],
     queryFn: () => fetchNotes(currentPage, 12, debouncedSearch),
     staleTime: 500, 
+    placeholderData: keepPreviousData,
   });
 
   const notes: Note[] = data?.notes ?? [];
